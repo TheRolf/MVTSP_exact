@@ -67,24 +67,24 @@ def directed_rooted_tree_DS(n, bounds=()):
 def combinations_w_bounds(n, r, bounds):
     """https://docs.python.org/3/library/itertools.html#itertools.combinations"""
     indices = [-1] + list(range(r)) + [n]
-    # print indices
+
     for i in reversed(list(range(1, r+1))):
         if indices[i+1] - indices[i] > (bounds[i] + 1):
             indices[i] = indices[i+1] - (bounds[i] + 1)
-    # print indices
+
     yield tuple(indices[1:-1])
     while True:
-        # print
+
         for i in reversed(list(range(1, r+1))):
             if indices[i]+1 - indices[i-1] <= (bounds[i-1] + 1) and indices[i]+1 != indices[i+1]:
                 indices[i] += 1
                 break
         else:
             return
-        # print indices
+
         for j in range(i+1, r+1):
             indices[j] = indices[j-1] + 1
-        # print indices
+
         for i in reversed(list(range(i+1, r+1))):
             if indices[i+1] - indices[i] > (bounds[i] + 1):
                 indices[i] = indices[i+1] - (bounds[i] + 1)
@@ -100,7 +100,3 @@ def combination_to_sequence(array, r):
         result[i] = array[i]-array[i-1]-1
     result[M] = r + M - array[M-1] - 1
     return result
-
-
-if __name__ == '__main__':
-    pass

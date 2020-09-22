@@ -10,11 +10,12 @@ def enum_MV(c, r):
     Input: cost matrix 'c', requiremets vector 'r'
     Output: objective value, dictionary of edges with multiplicities
 
-    The algorithm generates all N^{N-1} Pruefer-codes on N vertices, then all 2^{N-1} orientations of the edges.
+    The algorithm generates all n^{n-1} Pruefer-codes on N vertices, then all 2^{n-1} orientations of the edges.
     For each such directed spanning tree, it solves a transportation problem to ensure the degree requirements.
     It returns the cheapest of such multigraphs.
 
-    Time complexity:  n^n
+    Complexities (log sum r factors omitted)
+    Time complexity:  O(n^n)
     Space complexity: poly(n)
     """
     N = len(r)
@@ -79,7 +80,3 @@ def directUndirectedTrees(seq):
     # all possible directed trees
     for I in range(2**(N-1)):
         yield [(e[0], e[1]) if (I >> i) & 1 else (e[1], e[0]) for i, e in enumerate(T)]
-
-
-if __name__ == '__main__':
-    pass

@@ -21,7 +21,3 @@ def transport(cost, supply, demand):
                 i, j = int(u[2:]), int(v[2:])
                 flowXprime[(i, j)] = flowDict[u][v]
     return flowCost, flowXprime
-
-
-if __name__ == '__main__':
-    pass

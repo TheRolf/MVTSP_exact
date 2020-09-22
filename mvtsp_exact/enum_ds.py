@@ -5,13 +5,13 @@ from mvtsp_exact.tools.tools import nonNegativeQ, tree_U_multigraph
 from mvtsp_exact.tools.transport import transport
 
 
-def enum_DS(c, r, rootedQ=False, boundedQ=False):
+def enum_DS(c, r, rootedQ=True, boundedQ=True):
     """Solves the MV-TSP problem using enumerating directed trees (improved)
 
     Input: cost matrix 'c', requiremets vector 'r'
     Output: objective value, dictionary of edges with multiplicities
 
-    The algorithm generates all c^N degree sequences of directed trees on N vertices, and solves the underlying
+    The algorithm generates all 2^O(n) degree sequences of directed trees on n vertices, and solves the underlying
     transportation problem. For each degree sequence, it enumerates all directed spanning trees realising the degree
     sequence, and chooses the cheapest one. It returns the multigraph with minimal overall cost.
     Three modes:
@@ -21,7 +21,8 @@ def enum_DS(c, r, rootedQ=False, boundedQ=False):
        where d_T(v) would be higher than r(v)
     Note: in the paper, this algorithm is described in §2.2.1 as an improved version of enum-MV
 
-    Time complexity:  n^n (improved)
+    Complexities (log sum r factors omitted)
+    Time complexity:  O(n^n) (improved)
     Space complexity: poly(n)
     """
     N = len(r)
@@ -48,7 +49,3 @@ def enum_DS(c, r, rootedQ=False, boundedQ=False):
                 best_st = x_st
     best_sol = tree_U_multigraph(best_st, best_tp)
     return best_obj, best_sol
-
-
-if __name__ == '__main__':
-    pass

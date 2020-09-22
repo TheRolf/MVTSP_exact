@@ -5,23 +5,23 @@ from mvtsp_exact.tools.tools import nonNegativeQ, tree_U_multigraph
 from mvtsp_exact.tools.transport import transport
 
 
-def dp_MV(c, r, rootedQ=False, boundedQ=False):
+def dp_MV(c, r, rootedQ=True, boundedQ=True):
     """Solves the MV-TSP problem using dynamic programming
 
     Input: cost matrix 'c', requiremets vector 'r'
     Output: objective value, dictionary of edges with multiplicities
 
-    The algorithm generates all c^N degree sequences of directed trees on N vertices, and solves the underlying
+    The algorithm generates all 2^O(n) degree sequences of directed trees on n vertices, and solves the underlying
     transportation problem. For each degree sequence, it calculates the minimum cost spanning tree realising that
     degree sequence. It returns the multigraph with minimal overall cost.
     1) rootedQ=False, boundedQ=False: it enumerates degree sequences of directed trees (~11.09^n)
     2) rootedQ=True, boundedQ=False: it enumerates degree sequences of rooted trees (~4^n)
     3) rootedQ=True, boundedQ=True: it enumerates degree sequences of rooted trees, but omits infeasible ones (i.e.
-       where d_T(v) would be higher than r(v)
+       where d_T(v) would be higher than r(v), time and space complexity falls back to O(2^n) for the single-visit TSP
 
-    Complexities for options 2)-3)
-    Time complexity:  5^n
-    Space complexity: 5^n
+    Complexities for options 2)-3) (log sum r factors omitted)
+    Time complexity:  O(5^n)
+    Space complexity: O(5^n)
     """
     def T(ds_o, ds_i):
         if (ds_o, ds_i) in Table:
@@ -74,7 +74,3 @@ def dp_MV(c, r, rootedQ=False, boundedQ=False):
                 best_st = x_st
     best_sol = tree_U_multigraph(best_st, best_tp)
     return best_obj, best_sol
-
-
-if __name__ == '__main__':
-    pass

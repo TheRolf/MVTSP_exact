@@ -1,34 +1,31 @@
 from math import floor, ceil, log
 from operator import sub, add
 
-# from src.math_tools import nonNegativeQ
-# from src.mvtsp.mvtsp_tools import subSets, subSetPairs, multigraph
-# from src.mvtsp.spanning_tree_tools import directedTreeDSwrapper, degreeDist
-# from src.mvtsp.transport import transport
-# from src.tools import dict_union
 from mvtsp_exact.tools.degree_sequences import directed_tree_DS_wrapper
 from mvtsp_exact.tools.tools import nonNegativeQ, tree_U_multigraph, distribute_degree, subset_pairs, subsets
 from mvtsp_exact.tools.transport import transport
 
 
-def dc_MV(c, r, perfectlyBalancedQ=False, rootedQ=False, boundedQ=False):
+def dc_MV(c, r, perfectlyBalancedQ=True, rootedQ=True, boundedQ=True):
     """Solves the MV-TSP problem using divide & conquer
 
     Input: cost matrix 'c', requiremets vector 'r'
     Output: objective value, dictionary of edges with multiplicities
 
-    The algorithm generates all c^N degree sequences of directed trees on N vertices, and solves the underlying
+    The algorithm generates all 2^O(n) degree sequences of directed trees on n vertices, and solves the underlying
     transportation problem. For each degree sequence, it calculates the minimum cost spanning tree realising that
     degree sequence, using a divide & conquer approach inspired by Gurevich & Shelah.
     Options:
     - rootedQ: considers rooted spanning trees, if set True
-    - boundedQ: does not generate infeasible degree sequences, if set True (only works if rootedQ=True)
+    - boundedQ: does not generate infeasible degree sequences, if set True (only works if rootedQ=True); time complexity
+      falls back to O(4^n) for a single-visit TSP instance
     - perfectlyBalancedQ: uses perfectly balanced (~1/2-1/2) partitioning, if set True; ~1/3-2/3 otherwise
       (only works if rootedQ=True)
 
-    Complexities if both rootedQ and perfectlyBalancedQ are set True
-    Time complexity:  16^n
+    Complexities if both rootedQ and perfectlyBalancedQ are set True (log sum r factors omitted)
+    Time complexity:  O(16^n)
     Space complexity: poly(n)
+
     """
     N = len(r)
     best_obj = float('inf')
@@ -57,7 +54,7 @@ def T(c, S, d_o, d_i, perfectlyBalancedQ=False):
     elif len(S) == 3:
         return cost_of_three(d_o, d_i, c)
 
-    else:
+    else:  # len(S) >= 4
         cost = float("inf")
         tree = []
         s0 = min(S) - 1
@@ -129,12 +126,12 @@ def T(c, S, d_o, d_i, perfectlyBalancedQ=False):
                                     c2.update({(s0, j): 0 for j in seps})
 
                                     cost1, tree1 = T(c1, S1, d_o_1, d_i_1, perfectlyBalancedQ=perfectlyBalancedQ)
-                                    cost2, tree2 = T(c2, S2_.union({s0}), d_o_2, d_i_2, perfectlyBalancedQ=perfectlyBalancedQ)  #
+                                    cost2, tree2 = T(c2, S2_.union({s0}), d_o_2, d_i_2, perfectlyBalancedQ=perfectlyBalancedQ)
                                     if cost1 + cost2 < cost:
                                         cost = cost1 + cost2
                                         tree = tree1 + tree2
 
-        else:  # perfectlyBalancedQ=False
+        else:  # perfectlyBalancedQ==False
             for S1, S2 in subset_pairs(S, minSize=minSize, maxSize=maxSize):
                 for s1 in S1:
                     d_o_s1_in_S1 = len(S1)-1 - sum(d_o[p] for p in S1 if p!=s1)
@@ -189,7 +186,3 @@ def cost_of_three(d_o, d_i, c):
         return c[lf1, cnt] + c[lf2, cnt], [[lf1, cnt], [lf2, cnt]]
     elif "i" in types:
         return c[cnt, lf1] + c[cnt, lf2], [[cnt, lf1], [cnt, lf2]]
-
-
-if __name__ == '__main__':
-    pass
